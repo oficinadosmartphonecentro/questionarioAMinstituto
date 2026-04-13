@@ -327,7 +327,7 @@ tr:hover td{background:rgba(200,146,42,.03);}
 // ═══════════════════════════════════════════
 const SENHA = "Alice2025";
 const SK = "am_v4";
-const SHEETS_URL = "https://script.google.com/macros/s/AKfycbxACngFKlpzaSh1q8tcyNaQC6qJiMl2SMNG7-JDVmcasKqvnf472T3Ry8JRoykG4f_VlA/exec";
+const FORMSPREE_URL = "https://formspree.io/f/xwvakrwe";
 
 const DATAS = [
   {dia:27,mes:3,ano:2026,semana:"Segunda-feira",mesStr:"Abril"},
@@ -397,17 +397,11 @@ function toast(msg){
 // ═══════════════════════════════════════════
 function enviarSheets(dados){
   try {
-    const params = new URLSearchParams();
-    Object.keys(dados).forEach(k => {
-      const v = dados[k];
-      params.append(k, v !== undefined && v !== null ? String(v) : '');
-    });
-    const url = SHEETS_URL + '?' + params.toString();
-    const script = document.createElement('script');
-    script.src = url;
-    script.onload = function(){ this.remove(); };
-    script.onerror = function(){ this.remove(); };
-    document.head.appendChild(script);
+    fetch(FORMSPREE_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify(dados)
+    }).catch(()=>{});
   } catch(e){}
 }
 
