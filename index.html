@@ -58,7 +58,7 @@ select.fi option{background:var(--black3);}
 .q-ico{font-size:22px;display:block;margin-bottom:.6rem;}
 .q-txt{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:400;color:var(--white);line-height:1.55;margin-bottom:1.3rem;}
 .opts{display:flex;flex-direction:column;gap:8px;}
-.opt{padding:13px 16px;border:.5px solid rgba(200,146,42,.14);border-radius:2px;background:rgba(255,255,255,.02);cursor:pointer;font-size:13px;font-family:'Jost',sans-serif;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:12px;transition:all .2s;text-align:left;}
+.opt{padding:13px 16px;border:.5px solid rgba(200,146,42,.14);border-radius:2px;background:rgba(255,255,255,.02);cursor:pointer;font-size:13px;font-family:'Jost',sans-serif;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:12px;transition:all .2s;text-align:left;width:100%;}
 .opt:hover{border-color:var(--gold2);background:var(--gold4);color:var(--white);transform:translateX(4px);}
 .opt.sel{border-color:var(--gold);background:rgba(200,146,42,.1);color:var(--white);}
 .opt-n{width:22px;height:22px;border-radius:50%;border:.5px solid rgba(200,146,42,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--gold);flex-shrink:0;transition:all .2s;}
@@ -77,11 +77,13 @@ select.fi option{background:var(--black3);}
 .score-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;}
 .res-title{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:300;color:var(--white);text-align:center;margin-bottom:.5rem;}
 .res-msg{font-size:13px;color:rgba(255,255,255,.5);text-align:center;line-height:1.8;font-weight:300;margin-bottom:1.3rem;}
+
 .cta-box{background:var(--black2);border:.5px solid var(--border2);border-radius:2px;padding:1.75rem 1.4rem;text-align:center;margin-bottom:1rem;position:relative;}
 .cta-box::before{content:'';position:absolute;inset:4px;border:.5px solid rgba(200,146,42,.08);border-radius:1px;pointer-events:none;}
 .cta-tag{display:inline-block;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold2);border:.5px solid rgba(200,146,42,.3);padding:4px 14px;border-radius:20px;margin-bottom:1rem;}
 .cta-box h3{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:300;color:var(--white);margin-bottom:.5rem;}
 .cta-box p{font-size:12px;color:rgba(255,255,255,.4);line-height:1.8;margin-bottom:1.2rem;font-weight:300;}
+.cta-presente{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--gold3);margin-bottom:.4rem;display:block;}
 .tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:.6rem;}
 .tag{font-size:10px;color:var(--gold);border:.5px solid var(--border);padding:3px 11px;border-radius:20px;background:var(--gold4);letter-spacing:.5px;}
 
@@ -101,6 +103,7 @@ select.fi option{background:var(--black3);}
 .hora-btn{padding:10px 4px;border:.5px solid rgba(200,146,42,.16);border-radius:2px;background:rgba(255,255,255,.02);font-size:12px;font-family:'Jost',sans-serif;color:rgba(255,255,255,.5);cursor:pointer;text-align:center;transition:all .18s;}
 .hora-btn:hover{border-color:var(--gold);background:var(--gold4);color:var(--white);}
 .hora-btn.sel{background:var(--gold);border-color:var(--gold);color:var(--black);font-weight:500;}
+
 .confirm-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid rgba(255,255,255,.05);}
 .confirm-row:last-child{border-bottom:none;}
 .confirm-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);}
@@ -124,6 +127,10 @@ tr:hover td{background:rgba(200,146,42,.03);}
 .exp-btn:hover{background:var(--gold4);}
 .panel-link{display:block;text-align:center;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.18);cursor:pointer;margin-top:1.75rem;padding-top:.75rem;border-top:.5px solid rgba(255,255,255,.05);}
 .panel-link:hover{color:var(--gold);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(200,146,42,.15);border:.5px solid var(--border2);border-radius:2px;padding:10px 20px;font-size:11px;letter-spacing:1px;color:var(--gold2);opacity:0;transition:all .4s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
@@ -187,22 +194,29 @@ tr:hover td{background:rgba(200,146,42,.03);}
     <div class="res-title" id="res-title"></div>
     <div class="res-msg" id="res-msg"></div>
   </div>
+
+  <!-- CTA URGENTE (nota abaixo de 9) -->
   <div id="cta-urg" style="display:none">
     <div class="cta-box"><div class="card-inner"></div>
-      <div class="cta-tag">Exclusivo para você</div>
-      <h3>Consulta Gratuita de Avaliação Estética</h3>
-      <p>Você merece um olhar especializado e personalizado. O AM Instituto convida você para uma avaliação completa — sem compromisso, com todo o cuidado que você tanto merece.</p>
-      <button class="btn btn-gold" onclick="show('s-cal')">Agendar minha consulta gratuita →</button>
+      <div class="cta-tag">Seu presente especial</div>
+      <span class="cta-presente">Receba meu presente para você!</span>
+      <h3>Você merece alguém que cuide de você.</h3>
+      <p>Resgate agora sua consulta gratuita com o AM Instituto — avaliação estética personalizada, sem compromisso, com todo o cuidado que você tanto merece.</p>
+      <button class="btn btn-gold" onclick="show('s-cal')">Resgatar minha consulta gratuita →</button>
     </div>
   </div>
+
+  <!-- CTA NORMAL (nota 9 ou acima) -->
   <div id="cta-ok" style="display:none">
     <div class="cta-box"><div class="card-inner"></div>
-      <div class="cta-tag">Para você</div>
-      <h3>Eleve ainda mais o seu cuidado</h3>
+      <div class="cta-tag">Seu presente especial</div>
+      <span class="cta-presente">Receba meu presente para você!</span>
+      <h3>Você merece alguém que cuide de você.</h3>
       <p>Você já se prioriza — e isso é lindo. Venha conhecer o que o AM Instituto pode fazer para realçar ainda mais a sua beleza natural.</p>
-      <button class="btn btn-gold" onclick="show('s-cal')">Agendar uma visita →</button>
+      <button class="btn btn-gold" onclick="show('s-cal')">Resgatar minha consulta gratuita →</button>
     </div>
   </div>
+
   <div class="card" style="margin-top:1rem;"><div class="card-inner"></div>
     <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:.6rem;">Suas áreas de atenção</p>
     <div class="tags" id="tags"></div>
@@ -261,7 +275,7 @@ tr:hover td{background:rgba(200,146,42,.03);}
       <div class="confirm-row"><span class="confirm-lbl">Data</span><span class="confirm-val" id="fin-data"></span></div>
       <div class="confirm-row"><span class="confirm-lbl">Horário</span><span class="confirm-val" id="fin-hora"></span></div>
     </div>
-    <button class="btn btn-gold" onclick="novoReg()">Próxima participante →</button>
+    <button class="btn btn-gold" onclick="novoReg()">Nova participante →</button>
   </div>
 </div>
 
@@ -286,7 +300,7 @@ tr:hover td{background:rgba(200,146,42,.03);}
       <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--white);font-weight:300;">Painel de Participantes</div>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="exp-btn" onclick="exportCSV()">↓ Exportar CSV</button>
+      <button class="exp-btn" onclick="exportCSV()">↓ CSV</button>
       <button class="exp-btn" onclick="show('s0')">Sair</button>
     </div>
   </div>
@@ -299,23 +313,38 @@ tr:hover td{background:rgba(200,146,42,.03);}
     </tr></thead>
     <tbody id="dados-tbody"></tbody>
   </table></div>
-  <p style="font-size:10px;color:rgba(255,255,255,.18);text-align:center;margin-top:1rem;">Dados armazenados localmente · Exporte o CSV para backup externo</p>
+  <p style="font-size:10px;color:rgba(255,255,255,.18);text-align:center;margin-top:1rem;">Dados salvos no Google Sheets em tempo real · CSV como backup local</p>
 </div>
 
 </div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
-const SENHA="Alice2025";
-const SK="am_v3";
-const DATAS=[
+// ═══════════════════════════════════════════
+// CONFIGURAÇÃO
+// ═══════════════════════════════════════════
+const SENHA = "Alice2025";
+const SK = "am_v4";
+const SHEETS_URL = "https://script.google.com/macros/s/AKfycbxACngFKlpzaSh1q8tcyNaQC6qJiMl2SMNG7-JDVmcasKqvnf472T3Ry8JRoykG4f_VlA/exec";
+
+const DATAS = [
   {dia:27,mes:3,ano:2026,semana:"Segunda-feira",mesStr:"Abril"},
   {dia:28,mes:3,ano:2026,semana:"Terça-feira",mesStr:"Abril"},
   {dia:29,mes:3,ano:2026,semana:"Quarta-feira",mesStr:"Abril"},
   {dia:30,mes:3,ano:2026,semana:"Quinta-feira",mesStr:"Abril"},
-  {dia:2,mes:4,ano:2026,semana:"Sábado",mesStr:"Maio"}
+  {dia:2, mes:4,ano:2026,semana:"Sábado",      mesStr:"Maio"}
 ];
-const HORAS=(()=>{const h=[];for(let i=14;i<=21;i++){h.push(String(i).padStart(2,'0')+':00');h.push(String(i).padStart(2,'0')+':30');}h.push('22:00');return h;})();
-const Qs=[
+
+const HORAS = (()=>{
+  const h=[];
+  for(let i=14;i<=21;i++){h.push(String(i).padStart(2,'0')+':00');h.push(String(i).padStart(2,'0')+':30');}
+  h.push('22:00');
+  return h;
+})();
+
+const Qs = [
   {ico:"💞",txt:"Quantas vezes você já sacrificou seus planos ou desejos por conta do que o marido, filhos ou família precisavam?",opts:[{l:"Raramente — consigo equilibrar bem",v:0},{l:"Às vezes, mas não é um padrão",v:3},{l:"Com frequência, é quase automático",v:6},{l:"Sempre. Os outros sempre vêm primeiro.",v:10}],tag:"Sacrifício pessoal"},
   {ico:"🫶",txt:"Com que frequência você cuida mais das necessidades dos outros do que das suas próprias?",opts:[{l:"Raramente — eu me priorizo",v:0},{l:"Às vezes me perco nisso",v:3},{l:"Na maioria das vezes",v:6},{l:"Sempre. Minha necessidade fica por último.",v:10}],tag:"Prioridade própria"},
   {ico:"💅",txt:"Com que frequência você abre mão de coisas para si mesma — cabelo, unhas, uma roupa que gosta — para gastar com os outros?",opts:[{l:"Não abro mão, me cuido regularmente",v:0},{l:"Às vezes deixo de lado",v:3},{l:"Frequentemente prefiro gastar com os outros",v:6},{l:"Quase nunca faço algo só por mim",v:10}],tag:"Autocuidado estético"},
@@ -328,20 +357,88 @@ const Qs=[
   {ico:"🕊️",txt:"Até quando você vai continuar deixando você mesma para depois?",opts:[{l:"Já comecei a me priorizar",v:0},{l:"Preciso começar logo",v:4},{l:"Não sei — a culpa me paralisa",v:7},{l:"Nunca pensei nisso antes de agora",v:10}],tag:"Consciência de mudança"}
 ];
 
-let resps=new Array(10).fill(null),qAtual=0,dadosU={},diaSel=null,horaSel=null;
+// ═══════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════
+let resps = new Array(10).fill(null);
+let qAtual = 0;
+let dadosU = {};
+let diaSel = null;
+let horaSel = null;
+let registroId = null; // ID único por participante para atualizar linha no Sheets
 
+// ═══════════════════════════════════════════
+// UTILITÁRIOS
+// ═══════════════════════════════════════════
 function getP(){try{return JSON.parse(localStorage.getItem(SK)||'[]');}catch(e){return[];}}
-function saveP(p){const l=getP();l.push(p);localStorage.setItem(SK,JSON.stringify(l));}
-function updP(p){const l=getP();for(let i=l.length-1;i>=0;i--){if(l[i].tel===p.tel&&l[i].timestamp===p.timestamp){l[i]={...p};break;}}localStorage.setItem(SK,JSON.stringify(l));}
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function saveLocal(p){const l=getP();l.push(p);localStorage.setItem(SK,JSON.stringify(l));}
+function updLocal(p){
+  const l=getP();
+  for(let i=l.length-1;i>=0;i--){
+    if(l[i].id===p.id){l[i]={...l[i],...p};break;}
+  }
+  localStorage.setItem(SK,JSON.stringify(l));
+}
 
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ═══════════════════════════════════════════
+// GOOGLE SHEETS — envio não-bloqueante
+// ═══════════════════════════════════════════
+function enviarSheets(dados){
+  fetch(SHEETS_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(dados)
+  }).catch(()=>{});
+}
+
+// ═══════════════════════════════════════════
+// INÍCIO DO QUIZ
+// ═══════════════════════════════════════════
 function startQuiz(){
   const nome=document.getElementById('i-nome').value.trim();
   const tel=document.getElementById('i-tel').value.trim();
   if(!nome||!tel){alert('Preencha seu nome e WhatsApp para continuar.');return;}
-  dadosU={nome,tel,email:document.getElementById('i-email').value.trim(),idade:document.getElementById('i-idade').value.trim()};
-  resps=new Array(10).fill(null);qAtual=0;show('s-quiz');renderQ();
+
+  registroId = Date.now()+'-'+Math.random().toString(36).substr(2,6);
+
+  dadosU = {
+    id: registroId,
+    nome, tel,
+    email: document.getElementById('i-email').value.trim(),
+    idade: document.getElementById('i-idade').value.trim(),
+    score:'—', agendou:'Não', dataAgenda:'—',
+    horaAgenda:'—', preocupacao:'—', tags:'—',
+    etapa:'Cadastro',
+    timestamp: new Date().toLocaleString('pt-BR')
+  };
+
+  // Salva imediatamente ao cadastrar
+  saveLocal({...dadosU});
+  enviarSheets({...dadosU});
+  toast('Dados salvos ✓');
+
+  resps = new Array(10).fill(null);
+  qAtual = 0;
+  show('s-quiz');
+  renderQ();
 }
+
+// ═══════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════
 function renderQ(){
   const q=Qs[qAtual];
   document.getElementById('q-num').textContent=String(qAtual+1).padStart(2,'0')+' / 10';
@@ -353,27 +450,50 @@ function renderQ(){
   document.getElementById('q-txt').textContent=q.txt;
   const od=document.getElementById('q-opts');od.innerHTML='';
   q.opts.forEach((o,i)=>{
-    const b=document.createElement('button');b.className='opt'+(resps[qAtual]===i?' sel':'');
+    const b=document.createElement('button');
+    b.className='opt'+(resps[qAtual]===i?' sel':'');
     b.innerHTML='<span class="opt-n">'+(i+1)+'</span><span>'+o.l+'</span>';
-    b.onclick=()=>selOp(i);od.appendChild(b);
-  });updBtn();
+    b.onclick=()=>selOp(i);
+    od.appendChild(b);
+  });
+  updBtn();
 }
+
 function selOp(i){
   resps[qAtual]=i;
   document.querySelectorAll('.opt').forEach((b,idx)=>{
     b.classList.toggle('sel',idx===i);
     const n=b.querySelector('.opt-n');
-    n.style.background=idx===i?'var(--gold)':'';n.style.borderColor=idx===i?'var(--gold)':'';n.style.color=idx===i?'var(--black)':'';
-  });updBtn();
+    n.style.background=idx===i?'var(--gold)':'';
+    n.style.borderColor=idx===i?'var(--gold)':'';
+    n.style.color=idx===i?'var(--black)':'';
+  });
+  updBtn();
 }
+
 function updBtn(){
   const b=document.getElementById('btn-nxt'),on=resps[qAtual]!==null;
-  b.classList.toggle('on',on);b.textContent=qAtual===9?'Ver meu resultado →':'Próxima →';
+  b.classList.toggle('on',on);
+  b.textContent=qAtual===9?'Ver meu resultado →':'Próxima →';
 }
-function nextQ(){if(resps[qAtual]===null)return;if(qAtual<9){qAtual++;renderQ();}else showResultado();}
-function prevQ(){if(qAtual>0){qAtual--;renderQ();}}
-function calcScore(){let t=0;Qs.forEach((q,i)=>{if(resps[i]!==null)t+=q.opts[resps[i]].v;});return parseFloat((t/100*10).toFixed(1));}
 
+function nextQ(){
+  if(resps[qAtual]===null)return;
+  if(qAtual<9){qAtual++;renderQ();}
+  else showResultado();
+}
+
+function prevQ(){if(qAtual>0){qAtual--;renderQ();}}
+
+function calcScore(){
+  let t=0;
+  Qs.forEach((q,i)=>{if(resps[i]!==null)t+=q.opts[resps[i]].v;});
+  return parseFloat((t/100*10).toFixed(1));
+}
+
+// ═══════════════════════════════════════════
+// RESULTADO
+// ═══════════════════════════════════════════
 function showResultado(){
   const sc=calcScore();
   const svg=document.getElementById('score-svg');
@@ -385,47 +505,80 @@ function showResultado(){
       transform="rotate(-90 ${cx} ${cy})" style="transition:stroke-dashoffset 1.2s ease"/>`;
   const el=document.getElementById('score-val');el.style.color=cor;
   let d=0;const iv=setInterval(()=>{d=Math.min(d+.15,sc);el.textContent=d.toFixed(1);if(d>=sc)clearInterval(iv);},30);
+
   document.getElementById('cta-urg').style.display='none';
   document.getElementById('cta-ok').style.display='none';
+
   let titulo,msg;
-  if(sc>=9){titulo='Você se cuida muito bem';msg='Parabéns, '+dadosU.nome+'! Você demonstra uma relação saudável consigo mesma. Continue investindo em você.';document.getElementById('cta-ok').style.display='block';}
-  else if(sc>=6){titulo='Você merece mais atenção';msg=dadosU.nome+', você tem consciência de si, mas ainda coloca os outros na frente com frequência. Chegou a hora de equilibrar essa balança.';document.getElementById('cta-urg').style.display='block';}
-  else{titulo='Você está no último lugar da sua própria lista';msg=dadosU.nome+', você cuida de todos, mas se esqueceu de si mesma. Seu bem-estar pede atenção urgente — e você merece um recomeço que começa agora.';document.getElementById('cta-urg').style.display='block';}
+  if(sc>=9){
+    titulo='Você se cuida muito bem';
+    msg='Parabéns, '+dadosU.nome+'! Você demonstra uma relação saudável consigo mesma. Continue investindo em você.';
+    document.getElementById('cta-ok').style.display='block';
+  } else if(sc>=6){
+    titulo='Você merece mais atenção';
+    msg=dadosU.nome+', você tem consciência de si, mas ainda coloca os outros na frente com frequência. Chegou a hora de equilibrar essa balança.';
+    document.getElementById('cta-urg').style.display='block';
+  } else {
+    titulo='Você está no último lugar da sua própria lista';
+    msg=dadosU.nome+', você cuida de todos, mas se esqueceu de si mesma. Seu bem-estar pede atenção urgente — e você merece um recomeço que começa agora.';
+    document.getElementById('cta-urg').style.display='block';
+  }
+
   document.getElementById('res-title').textContent=titulo;
   document.getElementById('res-msg').textContent=msg;
-  const tagsDiv=document.getElementById('tags');tagsDiv.innerHTML='';
+
   const tgs=[...new Set(resps.map((r,i)=>r!==null&&r>=2?Qs[i].tag:null).filter(Boolean))].slice(0,6);
+  const tagsDiv=document.getElementById('tags');tagsDiv.innerHTML='';
   if(!tgs.length)tgs.push('Equilíbrio','Bem-estar');
   tgs.forEach(t=>{const s=document.createElement('span');s.className='tag';s.textContent=t;tagsDiv.appendChild(s);});
-  dadosU.score=sc;dadosU.agendou='Não';dadosU.dataAgenda='—';dadosU.horaAgenda='—';dadosU.preocupacao='—';
-  dadosU.timestamp=new Date().toLocaleString('pt-BR');
-  dadosU.tags=[...new Set(resps.map((r,i)=>r!==null&&r>=2?Qs[i].tag:null).filter(Boolean))].join(', ');
-  saveP({...dadosU});show('s-res');
+
+  // Atualiza dados com score e tags
+  dadosU.score = sc;
+  dadosU.tags = tgs.join(', ');
+  dadosU.etapa = 'Questionário completo';
+  dadosU.timestamp = new Date().toLocaleString('pt-BR');
+
+  updLocal({...dadosU});
+  enviarSheets({...dadosU});
+  toast('Resultado salvo ✓');
+
+  show('s-res');
 }
 
+// ═══════════════════════════════════════════
+// CALENDÁRIO
+// ═══════════════════════════════════════════
 function renderDias(){
   const grid=document.getElementById('dias-grid');grid.innerHTML='';
   DATAS.forEach((d,i)=>{
     const card=document.createElement('div');
     card.className='dia-card'+(diaSel&&diaSel.idx===i?' sel':'');
     card.innerHTML=`<div class="dc-dia">${d.dia}</div><div class="dc-mes">${d.mesStr}</div><div class="dc-sem">${d.semana}</div>`;
-    card.onclick=()=>selDia(i);grid.appendChild(card);
+    card.onclick=()=>selDia(i);
+    grid.appendChild(card);
   });
 }
+
 function selDia(idx){
-  diaSel={idx,...DATAS[idx]};horaSel=null;renderDias();
+  diaSel={idx,...DATAS[idx]};horaSel=null;
+  renderDias();
   document.getElementById('horas-section').style.display='block';
   document.getElementById('cal-confirm-wrap').style.display='none';
   renderHoras();
   setTimeout(()=>document.getElementById('horas-section').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
 }
+
 function renderHoras(){
   const hg=document.getElementById('horas-grid');hg.innerHTML='';
   HORAS.forEach(h=>{
-    const b=document.createElement('button');b.className='hora-btn'+(horaSel===h?' sel':'');
-    b.textContent=h;b.onclick=()=>selHora(h);hg.appendChild(b);
+    const b=document.createElement('button');
+    b.className='hora-btn'+(horaSel===h?' sel':'');
+    b.textContent=h;
+    b.onclick=()=>selHora(h);
+    hg.appendChild(b);
   });
 }
+
 function selHora(h){
   horaSel=h;renderHoras();
   const d=diaSel;
@@ -437,74 +590,104 @@ function selHora(h){
   document.getElementById('cal-confirm-wrap').style.display='block';
   setTimeout(()=>document.getElementById('cal-confirm-wrap').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
 }
+
 function confirmarAgenda(){
   if(!diaSel||!horaSel){alert('Selecione uma data e horário.');return;}
   const d=diaSel;
   const dataStr=String(d.dia).padStart(2,'0')+'/'+String(d.mes+1).padStart(2,'0')+'/'+d.ano;
-  dadosU.agendou='Sim';dadosU.dataAgenda=dataStr+' ('+d.semana+')';dadosU.horaAgenda=horaSel;
+
+  dadosU.agendou='Sim';
+  dadosU.dataAgenda=dataStr+' ('+d.semana+')';
+  dadosU.horaAgenda=horaSel;
   dadosU.preocupacao=document.getElementById('i-preoc').value||'—';
-  updP({...dadosU});
+  dadosU.etapa='Agendamento confirmado';
+  dadosU.timestamp=new Date().toLocaleString('pt-BR');
+
+  updLocal({...dadosU});
+  enviarSheets({...dadosU});
+  toast('Agendamento salvo ✓');
+
   document.getElementById('fin-nome').textContent=dadosU.nome;
   document.getElementById('fin-data').textContent=dataStr+' — '+d.semana;
   document.getElementById('fin-hora').textContent=horaSel;
   show('s-final');
 }
+
+// ═══════════════════════════════════════════
+// RESET
+// ═══════════════════════════════════════════
 function novoReg(){
-  resps=new Array(10).fill(null);qAtual=0;dadosU={};diaSel=null;horaSel=null;
+  resps=new Array(10).fill(null);qAtual=0;dadosU={};diaSel=null;horaSel=null;registroId=null;
   ['i-nome','i-tel','i-email','i-idade'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('cta-urg').style.display='none';document.getElementById('cta-ok').style.display='none';
+  document.getElementById('cta-urg').style.display='none';
+  document.getElementById('cta-ok').style.display='none';
   show('s0');
 }
 
 // Inicializa calendário ao entrar na tela
 const calScreen=document.getElementById('s-cal');
-const observer=new MutationObserver(()=>{
+new MutationObserver(()=>{
   if(calScreen.classList.contains('active')){
     diaSel=null;horaSel=null;
     document.getElementById('horas-section').style.display='none';
     document.getElementById('cal-confirm-wrap').style.display='none';
     renderDias();
   }
-});
-observer.observe(calScreen,{attributeFilter:['class']});
+}).observe(calScreen,{attributeFilter:['class']});
 
+// ═══════════════════════════════════════════
+// PAINEL LOCAL
+// ═══════════════════════════════════════════
 function checkSenha(){
   const v=document.getElementById('i-senha').value;
   document.getElementById('senha-err').style.display=v===SENHA?'none':'block';
   if(v===SENHA)renderPanel();
 }
+
 function renderPanel(){
   const list=getP();
-  const total=list.length,ag=list.filter(p=>p.agendou==='Sim').length;
-  const media=total?parseFloat((list.reduce((s,p)=>s+(parseFloat(p.score)||0),0)/total).toFixed(1)):0;
+  const total=list.length;
+  const ag=list.filter(p=>p.agendou==='Sim').length;
+  const scores=list.filter(p=>p.score&&p.score!=='—').map(p=>parseFloat(p.score));
+  const media=scores.length?parseFloat((scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1)):0;
+
   document.getElementById('stats').innerHTML=`
     <div class="stat"><div class="stat-n">${total}</div><div class="stat-l">Participantes</div></div>
     <div class="stat"><div class="stat-n">${ag}</div><div class="stat-l">Agendamentos</div></div>
-    <div class="stat"><div class="stat-n">${media}</div><div class="stat-l">Nota média</div></div>`;
+    <div class="stat"><div class="stat-n">${media||'—'}</div><div class="stat-l">Nota média</div></div>`;
+
   const tbody=document.getElementById('dados-tbody');tbody.innerHTML='';
-  if(!list.length){tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:rgba(255,255,255,.2);padding:2rem;">Nenhuma participante registrada ainda.</td></tr>';show('s-panel');return;}
+  if(!list.length){
+    tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:rgba(255,255,255,.2);padding:2rem;">Nenhuma participante registrada ainda.</td></tr>';
+    show('s-panel');return;
+  }
+
   [...list].reverse().forEach(p=>{
-    const sc=parseFloat(p.score)||0;
-    const badge=sc>=9?'badge-green':sc>=6?'badge-gold':'badge-red';
+    const sc=parseFloat(p.score);
+    const badge=isNaN(sc)?'badge-gold':sc>=9?'badge-green':sc>=6?'badge-gold':'badge-red';
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><strong style="color:var(--white);font-weight:400;">${p.nome||'—'}</strong></td>
       <td>${p.tel||'—'}</td><td>${p.idade||'—'}</td>
       <td style="font-size:10px;">${p.email||'—'}</td>
-      <td><span class="badge ${badge}">${sc}</span></td>
-      <td>${p.agendou||'—'}</td><td>${p.dataAgenda||'—'}</td><td>${p.horaAgenda||'—'}</td>
+      <td><span class="badge ${badge}">${p.score||'—'}</span></td>
+      <td>${p.agendou||'—'}</td><td>${p.dataAgenda||'—'}</td>
+      <td>${p.horaAgenda||'—'}</td>
       <td style="font-size:10px;">${p.preocupacao||'—'}</td>
       <td style="font-size:10px;">${p.timestamp||'—'}</td>`;
     tbody.appendChild(tr);
   });
   show('s-panel');
 }
+
 function exportCSV(){
-  const list=getP();if(!list.length){alert('Nenhum dado para exportar.');return;}
-  const cols=['nome','tel','idade','email','score','agendou','dataAgenda','horaAgenda','preocupacao','tags','timestamp'];
+  const list=getP();
+  if(!list.length){alert('Nenhum dado para exportar.');return;}
+  const cols=['nome','tel','idade','email','score','agendou','dataAgenda','horaAgenda','preocupacao','tags','etapa','timestamp'];
   const csv='\uFEFF'+[cols.join(';'),...list.map(p=>cols.map(c=>(p[c]||'').toString().replace(/;/g,',')).join(';'))].join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
-  a.download='AMInstituto_Evento25Abril.csv';a.click();
+  a.download='AMInstituto_Evento25Abril.csv';
+  a.click();
 }
 </script>
 </body>
