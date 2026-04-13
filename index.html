@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AM Instituto — Diagnóstico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --black:#0a0a0a;--black2:#141414;--black3:#1e1e1e;
+  --white:#ffffff;
+  --gold:#c8922a;--gold2:#e8b84b;--gold3:#f5e0a0;
+  --gold4:rgba(200,146,42,.08);
+  --border:rgba(200,146,42,.18);--border2:rgba(200,146,42,.38);
+}
+html,body{min-height:100vh;background:var(--black);font-family:'Jost',sans-serif;color:var(--white);}
+#app{max-width:680px;margin:0 auto;padding:2rem 1.25rem 4rem;}
+.screen{display:none;}
+.screen.active{display:block;animation:rise .65s cubic-bezier(.22,1,.36,1);}
+@keyframes rise{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.logo-wrap{text-align:center;margin-bottom:1.75rem;}
+.brand-sub{font-size:9px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;text-align:center;margin-top:5px;font-weight:300;}
+h1.hl{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--white);text-align:center;line-height:1.35;margin:1.2rem 0 .4rem;}
+h1.hl em{font-style:italic;color:var(--gold);}
+.sub{font-size:13px;color:rgba(255,255,255,.4);text-align:center;line-height:1.8;font-weight:300;margin-bottom:1.5rem;}
+.orn{display:flex;align-items:center;gap:12px;margin:1rem 0;}
+.orn::before,.orn::after{content:'';flex:1;height:.5px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
+.orn span{color:var(--gold);font-size:12px;flex-shrink:0;}
+
+.card{background:var(--black2);border:.5px solid var(--border);border-radius:2px;padding:1.6rem 1.4rem;margin-bottom:1rem;position:relative;}
+.card-inner{position:absolute;inset:5px;border:.5px solid rgba(200,146,42,.07);border-radius:1px;pointer-events:none;}
+lbl{font-size:9px;font-weight:500;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase;display:block;margin-bottom:7px;}
+.fi{width:100%;padding:12px 14px;border:.5px solid rgba(200,146,42,.22);border-radius:2px;font-size:14px;font-family:'Jost',sans-serif;color:var(--white);background:rgba(255,255,255,.04);outline:none;transition:border-color .2s;}
+.fi:focus{border-color:var(--gold);background:rgba(200,146,42,.06);}
+.fi::placeholder{color:rgba(255,255,255,.2);}
+.fg{margin-bottom:1.1rem;}
+.fg:last-child{margin-bottom:0;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:460px){.row2{grid-template-columns:1fr;}}
+select.fi{appearance:auto;color-scheme:dark;}
+select.fi option{background:var(--black3);}
+
+.btn{width:100%;padding:15px;border:none;border-radius:2px;font-size:10px;font-weight:500;font-family:'Jost',sans-serif;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .22s;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#9a6c18);color:#fff8e6;}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(200,146,42,.35);}
+.btn-ghost{background:transparent;border:.5px solid var(--border2);color:rgba(255,255,255,.4);margin-top:10px;}
+.btn-ghost:hover{background:var(--gold4);color:var(--white);}
+
+.prog-wrap{margin-bottom:1.5rem;}
+.prog-meta{display:flex;justify-content:space-between;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;}
+.prog-track{height:1px;background:rgba(255,255,255,.08);}
+.prog-fill{height:1px;background:linear-gradient(to right,var(--gold),var(--gold2));transition:width .5s ease;}
+
+.q-num{font-size:9px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:.6rem;}
+.q-ico{font-size:22px;display:block;margin-bottom:.6rem;}
+.q-txt{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:400;color:var(--white);line-height:1.55;margin-bottom:1.3rem;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{padding:13px 16px;border:.5px solid rgba(200,146,42,.14);border-radius:2px;background:rgba(255,255,255,.02);cursor:pointer;font-size:13px;font-family:'Jost',sans-serif;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:12px;transition:all .2s;text-align:left;}
+.opt:hover{border-color:var(--gold2);background:var(--gold4);color:var(--white);transform:translateX(4px);}
+.opt.sel{border-color:var(--gold);background:rgba(200,146,42,.1);color:var(--white);}
+.opt-n{width:22px;height:22px;border-radius:50%;border:.5px solid rgba(200,146,42,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--gold);flex-shrink:0;transition:all .2s;}
+.opt.sel .opt-n{background:var(--gold);border-color:var(--gold);color:var(--black);}
+.nav{display:flex;gap:10px;margin-top:1.1rem;}
+.btn-prev{flex:1;padding:13px;background:transparent;border:.5px solid rgba(255,255,255,.08);border-radius:2px;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:'Jost',sans-serif;color:rgba(255,255,255,.3);cursor:pointer;transition:all .2s;}
+.btn-prev:hover{border-color:var(--border2);color:var(--white);}
+.btn-nxt{flex:2;padding:13px;background:linear-gradient(135deg,var(--gold),#9a6c18);color:#fff8e6;border:none;border-radius:2px;font-size:9px;letter-spacing:3px;text-transform:uppercase;font-family:'Jost',sans-serif;cursor:pointer;transition:all .2s;opacity:.35;pointer-events:none;}
+.btn-nxt.on{opacity:1;pointer-events:all;}
+.btn-nxt.on:hover{transform:translateY(-2px);}
+
+.score-ring{width:130px;height:130px;margin:0 auto 1.4rem;position:relative;}
+.score-ring svg{position:absolute;top:0;left:0;}
+.score-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-val{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;line-height:1;}
+.score-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;}
+.res-title{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:300;color:var(--white);text-align:center;margin-bottom:.5rem;}
+.res-msg{font-size:13px;color:rgba(255,255,255,.5);text-align:center;line-height:1.8;font-weight:300;margin-bottom:1.3rem;}
+.cta-box{background:var(--black2);border:.5px solid var(--border2);border-radius:2px;padding:1.75rem 1.4rem;text-align:center;margin-bottom:1rem;position:relative;}
+.cta-box::before{content:'';position:absolute;inset:4px;border:.5px solid rgba(200,146,42,.08);border-radius:1px;pointer-events:none;}
+.cta-tag{display:inline-block;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold2);border:.5px solid rgba(200,146,42,.3);padding:4px 14px;border-radius:20px;margin-bottom:1rem;}
+.cta-box h3{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:300;color:var(--white);margin-bottom:.5rem;}
+.cta-box p{font-size:12px;color:rgba(255,255,255,.4);line-height:1.8;margin-bottom:1.2rem;font-weight:300;}
+.tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:.6rem;}
+.tag{font-size:10px;color:var(--gold);border:.5px solid var(--border);padding:3px 11px;border-radius:20px;background:var(--gold4);letter-spacing:.5px;}
+
+.dias-title{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:.85rem;}
+.dias-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:.5rem;}
+@media(max-width:400px){.dias-grid{grid-template-columns:repeat(2,1fr);}}
+.dia-card{border:.5px solid rgba(200,146,42,.18);border-radius:3px;padding:14px 8px;text-align:center;cursor:pointer;background:rgba(255,255,255,.02);transition:all .2s;}
+.dia-card:hover{border-color:var(--gold);background:var(--gold4);}
+.dia-card.sel{border-color:var(--gold);background:rgba(200,146,42,.12);}
+.dc-dia{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--white);line-height:1;}
+.dia-card.sel .dc-dia{color:var(--gold2);}
+.dc-mes{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;}
+.dc-sem{font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;}
+.horas-title{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;margin-top:1.2rem;}
+.horas-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;}
+@media(max-width:420px){.horas-grid{grid-template-columns:repeat(4,1fr);}}
+.hora-btn{padding:10px 4px;border:.5px solid rgba(200,146,42,.16);border-radius:2px;background:rgba(255,255,255,.02);font-size:12px;font-family:'Jost',sans-serif;color:rgba(255,255,255,.5);cursor:pointer;text-align:center;transition:all .18s;}
+.hora-btn:hover{border-color:var(--gold);background:var(--gold4);color:var(--white);}
+.hora-btn.sel{background:var(--gold);border-color:var(--gold);color:var(--black);font-weight:500;}
+.confirm-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:.5px solid rgba(255,255,255,.05);}
+.confirm-row:last-child{border-bottom:none;}
+.confirm-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.confirm-val{font-size:13px;color:var(--white);font-weight:300;}
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.2rem;}
+.stat{background:var(--black2);border:.5px solid var(--border);border-radius:2px;padding:1rem;text-align:center;}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--gold);font-weight:300;}
+.stat-l{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.tbl-wrap{overflow-x:auto;border:.5px solid var(--border);border-radius:2px;}
+table{width:100%;border-collapse:collapse;font-size:11px;min-width:600px;}
+th{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);border-bottom:.5px solid var(--border);padding:10px 12px;text-align:left;background:var(--black2);}
+td{padding:10px 12px;border-bottom:.5px solid rgba(255,255,255,.04);color:rgba(255,255,255,.6);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(200,146,42,.03);}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:500;letter-spacing:.5px;}
+.badge-red{background:rgba(200,50,50,.15);color:#e88;border:.5px solid rgba(200,50,50,.3);}
+.badge-gold{background:rgba(200,146,42,.15);color:var(--gold2);border:.5px solid var(--border);}
+.badge-green{background:rgba(50,180,100,.12);color:#6ec98a;border:.5px solid rgba(50,180,100,.25);}
+.exp-btn{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 16px;background:transparent;border:.5px solid var(--border2);border-radius:2px;color:var(--gold);cursor:pointer;font-family:'Jost',sans-serif;transition:all .2s;}
+.exp-btn:hover{background:var(--gold4);}
+.panel-link{display:block;text-align:center;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.18);cursor:pointer;margin-top:1.75rem;padding-top:.75rem;border-top:.5px solid rgba(255,255,255,.05);}
+.panel-link:hover{color:var(--gold);}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ENTRADA -->
+<div id="s0" class="screen active">
+  <div class="logo-wrap">
+    <svg width="220" height="64" viewBox="0 0 340 90" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="38,8 8,82 22,82 38,44 54,82 68,82" fill="white"/>
+      <polygon points="78,8 78,82 92,82 92,40 113,82 123,82 144,40 144,82 158,82 158,8 143,8 118,58 93,8" fill="white"/>
+      <line x1="172" y1="12" x2="172" y2="78" stroke="rgba(200,146,42,.4)" stroke-width=".8"/>
+      <text x="182" y="64" font-family="Jost,sans-serif" font-size="26" font-weight="200" fill="white" letter-spacing="8">INSTITUTO</text>
+    </svg>
+    <div class="brand-sub">Harmonização Facial · Saúde &amp; Beleza</div>
+  </div>
+  <div class="orn"><span>✦</span></div>
+  <h1 class="hl">Quando foi a última vez<br>que você cuidou <em>de você?</em></h1>
+  <div class="orn"><span>◇</span></div>
+  <p class="sub">Um diagnóstico exclusivo para a mulher que cuida de todos —<br>e merece se lembrar que também precisa ser cuidada.</p>
+  <div class="card"><div class="card-inner"></div>
+    <div class="fg"><lbl>Seu nome</lbl><input class="fi" id="i-nome" type="text" placeholder="Como gostaria de ser chamada?"/></div>
+    <div class="row2">
+      <div class="fg"><lbl>WhatsApp</lbl><input class="fi" id="i-tel" type="tel" placeholder="(00) 00000-0000"/></div>
+      <div class="fg"><lbl>Sua idade</lbl><input class="fi" id="i-idade" type="text" placeholder="Anos"/></div>
+    </div>
+    <div class="fg"><lbl>E-mail</lbl><input class="fi" id="i-email" type="email" placeholder="seu@email.com"/></div>
+  </div>
+  <button class="btn btn-gold" onclick="startQuiz()">Iniciar meu diagnóstico</button>
+  <p style="text-align:center;font-size:10px;color:rgba(255,255,255,.18);margin-top:10px;letter-spacing:.5px;">Dados confidenciais · Apenas para contato</p>
+  <span class="panel-link" onclick="show('s-login')">⬡ Área restrita</span>
+</div>
+
+<!-- QUIZ -->
+<div id="s-quiz" class="screen">
+  <div class="logo-wrap" style="margin-bottom:1rem;">
+    <svg width="150" height="44" viewBox="0 0 340 90"><polygon points="38,8 8,82 22,82 38,44 54,82 68,82" fill="white"/><polygon points="78,8 78,82 92,82 92,40 113,82 123,82 144,40 144,82 158,82 158,8 143,8 118,58 93,8" fill="white"/><line x1="172" y1="12" x2="172" y2="78" stroke="rgba(200,146,42,.4)" stroke-width=".8"/><text x="182" y="64" font-family="Jost,sans-serif" font-size="26" font-weight="200" fill="white" letter-spacing="8">INSTITUTO</text></svg>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-meta"><span id="p-label">Pergunta 1 de 10</span><span id="p-pct">0%</span></div>
+    <div class="prog-track"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  </div>
+  <div class="card"><div class="card-inner"></div>
+    <div class="q-num" id="q-num">01 / 10</div>
+    <span class="q-ico" id="q-ico"></span>
+    <div class="q-txt" id="q-txt"></div>
+    <div class="opts" id="q-opts"></div>
+  </div>
+  <div class="nav">
+    <button class="btn-prev" onclick="prevQ()">← Anterior</button>
+    <button class="btn-nxt" id="btn-nxt" onclick="nextQ()">Próxima →</button>
+  </div>
+</div>
+
+<!-- RESULTADO -->
+<div id="s-res" class="screen">
+  <div class="logo-wrap"><svg width="150" height="44" viewBox="0 0 340 90"><polygon points="38,8 8,82 22,82 38,44 54,82 68,82" fill="white"/><polygon points="78,8 78,82 92,82 92,40 113,82 123,82 144,40 144,82 158,82 158,8 143,8 118,58 93,8" fill="white"/><line x1="172" y1="12" x2="172" y2="78" stroke="rgba(200,146,42,.4)" stroke-width=".8"/><text x="182" y="64" font-family="Jost,sans-serif" font-size="26" font-weight="200" fill="white" letter-spacing="8">INSTITUTO</text></svg></div>
+  <div class="orn"><span>✦</span></div>
+  <div style="text-align:center;margin:1.5rem 0;">
+    <div class="score-ring"><svg id="score-svg" width="130" height="130"></svg><div class="score-inner"><div class="score-val" id="score-val">0</div><div class="score-lbl">de 10</div></div></div>
+    <div class="res-title" id="res-title"></div>
+    <div class="res-msg" id="res-msg"></div>
+  </div>
+  <div id="cta-urg" style="display:none">
+    <div class="cta-box"><div class="card-inner"></div>
+      <div class="cta-tag">Exclusivo para você</div>
+      <h3>Consulta Gratuita de Avaliação Estética</h3>
+      <p>Você merece um olhar especializado e personalizado. O AM Instituto convida você para uma avaliação completa — sem compromisso, com todo o cuidado que você tanto merece.</p>
+      <button class="btn btn-gold" onclick="show('s-cal')">Agendar minha consulta gratuita →</button>
+    </div>
+  </div>
+  <div id="cta-ok" style="display:none">
+    <div class="cta-box"><div class="card-inner"></div>
+      <div class="cta-tag">Para você</div>
+      <h3>Eleve ainda mais o seu cuidado</h3>
+      <p>Você já se prioriza — e isso é lindo. Venha conhecer o que o AM Instituto pode fazer para realçar ainda mais a sua beleza natural.</p>
+      <button class="btn btn-gold" onclick="show('s-cal')">Agendar uma visita →</button>
+    </div>
+  </div>
+  <div class="card" style="margin-top:1rem;"><div class="card-inner"></div>
+    <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:.6rem;">Suas áreas de atenção</p>
+    <div class="tags" id="tags"></div>
+  </div>
+</div>
+
+<!-- CALENDÁRIO -->
+<div id="s-cal" class="screen">
+  <div class="logo-wrap" style="margin-bottom:1rem;"><svg width="140" height="42" viewBox="0 0 340 90"><polygon points="38,8 8,82 22,82 38,44 54,82 68,82" fill="white"/><polygon points="78,8 78,82 92,82 92,40 113,82 123,82 144,40 144,82 158,82 158,8 143,8 118,58 93,8" fill="white"/><line x1="172" y1="12" x2="172" y2="78" stroke="rgba(200,146,42,.4)" stroke-width=".8"/><text x="182" y="64" font-family="Jost,sans-serif" font-size="26" font-weight="200" fill="white" letter-spacing="8">INSTITUTO</text></svg></div>
+  <div class="orn"><span>◇</span></div>
+  <h1 class="hl" style="font-size:1.4rem;margin-bottom:.3rem;">Escolha sua <em>data</em></h1>
+  <p class="sub" style="margin-bottom:1.25rem;">Datas disponíveis para sua consulta gratuita após o evento do dia 25/04.</p>
+  <div class="card"><div class="card-inner"></div>
+    <div class="dias-title">Datas disponíveis</div>
+    <div class="dias-grid" id="dias-grid"></div>
+    <div id="horas-section" style="display:none;">
+      <div class="orn"><span>◇</span></div>
+      <div class="horas-title">Escolha o horário</div>
+      <div class="horas-grid" id="horas-grid"></div>
+    </div>
+  </div>
+  <div id="cal-confirm-wrap" style="display:none;">
+    <div class="card"><div class="card-inner"></div>
+      <p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.85rem;">Resumo do agendamento</p>
+      <div class="confirm-row"><span class="confirm-lbl">Participante</span><span class="confirm-val" id="cf-nome"></span></div>
+      <div class="confirm-row"><span class="confirm-lbl">Data</span><span class="confirm-val" id="cf-data"></span></div>
+      <div class="confirm-row"><span class="confirm-lbl">Horário</span><span class="confirm-val" id="cf-hora"></span></div>
+      <div class="confirm-row"><span class="confirm-lbl">WhatsApp</span><span class="confirm-val" id="cf-tel"></span></div>
+    </div>
+    <div class="fg" style="margin-bottom:1rem;">
+      <lbl>Sua principal preocupação estética</lbl>
+      <select class="fi" id="i-preoc">
+        <option value="">Selecione...</option>
+        <option>Envelhecimento facial / rugas</option>
+        <option>Manchas e textura da pele</option>
+        <option>Flacidez facial</option>
+        <option>Contorno do rosto / harmonização</option>
+        <option>Quero me sentir mais bonita de forma geral</option>
+        <option>Não sei ainda, quero uma avaliação completa</option>
+      </select>
+    </div>
+    <button class="btn btn-gold" onclick="confirmarAgenda()">Confirmar meu agendamento →</button>
+    <button class="btn btn-ghost" onclick="show('s-res')">← Voltar ao resultado</button>
+  </div>
+</div>
+
+<!-- FINAL -->
+<div id="s-final" class="screen">
+  <div style="text-align:center;padding:2.5rem 1rem;">
+    <div class="logo-wrap"><svg width="160" height="48" viewBox="0 0 340 90"><polygon points="38,8 8,82 22,82 38,44 54,82 68,82" fill="white"/><polygon points="78,8 78,82 92,82 92,40 113,82 123,82 144,40 144,82 158,82 158,8 143,8 118,58 93,8" fill="white"/><line x1="172" y1="12" x2="172" y2="78" stroke="rgba(200,146,42,.4)" stroke-width=".8"/><text x="182" y="64" font-family="Jost,sans-serif" font-size="26" font-weight="200" fill="white" letter-spacing="8">INSTITUTO</text></svg></div>
+    <div class="orn"><span>✦</span></div>
+    <h1 class="hl" style="font-size:1.5rem;">Agendamento <em>confirmado.</em></h1>
+    <p class="sub">Entraremos em contato pelo WhatsApp para confirmar sua consulta.<br>Você deu o primeiro passo — <em>para você mesma.</em></p>
+    <div class="card" style="margin:1.5rem 0;text-align:left;"><div class="card-inner"></div>
+      <div class="confirm-row"><span class="confirm-lbl">Participante</span><span class="confirm-val" id="fin-nome"></span></div>
+      <div class="confirm-row"><span class="confirm-lbl">Data</span><span class="confirm-val" id="fin-data"></span></div>
+      <div class="confirm-row"><span class="confirm-lbl">Horário</span><span class="confirm-val" id="fin-hora"></span></div>
+    </div>
+    <button class="btn btn-gold" onclick="novoReg()">Próxima participante →</button>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="s-login" class="screen">
+  <div class="logo-wrap"><svg width="160" height="48" viewBox="0 0 340 90"><polygon points="38,8 8,82 22,82 38,44 54,82 68,82" fill="white"/><polygon points="78,8 78,82 92,82 92,40 113,82 123,82 144,40 144,82 158,82 158,8 143,8 118,58 93,8" fill="white"/><line x1="172" y1="12" x2="172" y2="78" stroke="rgba(200,146,42,.4)" stroke-width=".8"/><text x="182" y="64" font-family="Jost,sans-serif" font-size="26" font-weight="200" fill="white" letter-spacing="8">INSTITUTO</text></svg></div>
+  <div class="orn"><span>◇</span></div>
+  <h1 class="hl" style="font-size:1.3rem;margin-bottom:1rem;">Área <em>Restrita</em></h1>
+  <div class="card"><div class="card-inner"></div>
+    <div class="fg"><lbl>Senha de acesso</lbl><input class="fi" id="i-senha" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkSenha()"/></div>
+    <div id="senha-err" style="font-size:11px;color:#e88;margin-bottom:.5rem;display:none;">Senha incorreta.</div>
+  </div>
+  <button class="btn btn-gold" onclick="checkSenha()">Acessar painel</button>
+  <button class="btn btn-ghost" onclick="show('s0')">← Voltar</button>
+</div>
+
+<!-- PAINEL -->
+<div id="s-panel" class="screen">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px;">
+    <div>
+      <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);">AM Instituto</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--white);font-weight:300;">Painel de Participantes</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="exp-btn" onclick="exportCSV()">↓ Exportar CSV</button>
+      <button class="exp-btn" onclick="show('s0')">Sair</button>
+    </div>
+  </div>
+  <div class="stat-row" id="stats"></div>
+  <div class="orn"><span>◇</span></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr>
+      <th>Nome</th><th>WhatsApp</th><th>Idade</th><th>E-mail</th>
+      <th>Nota</th><th>Agendou</th><th>Data</th><th>Horário</th><th>Preocupação</th><th>Registro</th>
+    </tr></thead>
+    <tbody id="dados-tbody"></tbody>
+  </table></div>
+  <p style="font-size:10px;color:rgba(255,255,255,.18);text-align:center;margin-top:1rem;">Dados armazenados localmente · Exporte o CSV para backup externo</p>
+</div>
+
+</div>
+
+<script>
+const SENHA="Alice2025";
+const SK="am_v3";
+const DATAS=[
+  {dia:27,mes:3,ano:2026,semana:"Segunda-feira",mesStr:"Abril"},
+  {dia:28,mes:3,ano:2026,semana:"Terça-feira",mesStr:"Abril"},
+  {dia:29,mes:3,ano:2026,semana:"Quarta-feira",mesStr:"Abril"},
+  {dia:30,mes:3,ano:2026,semana:"Quinta-feira",mesStr:"Abril"},
+  {dia:2,mes:4,ano:2026,semana:"Sábado",mesStr:"Maio"}
+];
+const HORAS=(()=>{const h=[];for(let i=14;i<=21;i++){h.push(String(i).padStart(2,'0')+':00');h.push(String(i).padStart(2,'0')+':30');}h.push('22:00');return h;})();
+const Qs=[
+  {ico:"💞",txt:"Quantas vezes você já sacrificou seus planos ou desejos por conta do que o marido, filhos ou família precisavam?",opts:[{l:"Raramente — consigo equilibrar bem",v:0},{l:"Às vezes, mas não é um padrão",v:3},{l:"Com frequência, é quase automático",v:6},{l:"Sempre. Os outros sempre vêm primeiro.",v:10}],tag:"Sacrifício pessoal"},
+  {ico:"🫶",txt:"Com que frequência você cuida mais das necessidades dos outros do que das suas próprias?",opts:[{l:"Raramente — eu me priorizo",v:0},{l:"Às vezes me perco nisso",v:3},{l:"Na maioria das vezes",v:6},{l:"Sempre. Minha necessidade fica por último.",v:10}],tag:"Prioridade própria"},
+  {ico:"💅",txt:"Com que frequência você abre mão de coisas para si mesma — cabelo, unhas, uma roupa que gosta — para gastar com os outros?",opts:[{l:"Não abro mão, me cuido regularmente",v:0},{l:"Às vezes deixo de lado",v:3},{l:"Frequentemente prefiro gastar com os outros",v:6},{l:"Quase nunca faço algo só por mim",v:10}],tag:"Autocuidado estético"},
+  {ico:"🪞",txt:"Quando você para na frente do espelho, como se sente com o que vê?",opts:[{l:"Me sinto bem e gosto do que vejo",v:0},{l:"Me aceito, mas gostaria de mudar algumas coisas",v:3},{l:"Na maioria das vezes não gosto",v:7},{l:"Evito me olhar, não me reconheço mais",v:10}],tag:"Autoestima"},
+  {ico:"⏰",txt:"Com que frequência você tem tempo genuíno para si mesma — descanso, hobbies, existir sem obrigações?",opts:[{l:"Com frequência — tenho meus momentos",v:0},{l:"De vez em quando",v:4},{l:"Raramente consigo esse tempo",v:7},{l:"Nunca — sempre tem algo ou alguém esperando",v:10}],tag:"Tempo próprio"},
+  {ico:"🌸",txt:"Quando foi a última vez que você se olhou de verdade — não por obrigação, mas com carinho consigo mesma?",opts:[{l:"Recentemente, é algo que pratico",v:0},{l:"Há alguns meses",v:4},{l:"Há mais de um ano",v:7},{l:"Não me lembro",v:10}],tag:"Conexão interior"},
+  {ico:"🤝",txt:"Você cuida de todos ao seu redor — mas quem cuida de você?",opts:[{l:"Eu mesma, tenho pessoas que me apoiam",v:0},{l:"Às vezes alguém me apoia",v:4},{l:"Raramente alguém pensa em mim",v:7},{l:"Ninguém — eu sou o suporte de todos",v:10}],tag:"Rede de apoio"},
+  {ico:"💭",txt:"Se hoje fosse o seu último dia de vida, você se arrependeria por não ter cuidado mais de você mesma?",opts:[{l:"Não — me cuidei como merecia",v:0},{l:"Um pouco, mas fiz o que pude",v:4},{l:"Sim, deixei muito para depois",v:7},{l:"Muito. Vivi para os outros e me esqueci de mim.",v:10}],tag:"Arrependimento"},
+  {ico:"🔋",txt:"Como está sua energia e disposição para cuidar de você mesma hoje?",opts:[{l:"Boa — tenho energia para mim",v:0},{l:"Regular — às vezes falta disposição",v:3},{l:"Baixa — estou esgotada",v:7},{l:"Zero — não sobra nada para mim",v:10}],tag:"Energia vital"},
+  {ico:"🕊️",txt:"Até quando você vai continuar deixando você mesma para depois?",opts:[{l:"Já comecei a me priorizar",v:0},{l:"Preciso começar logo",v:4},{l:"Não sei — a culpa me paralisa",v:7},{l:"Nunca pensei nisso antes de agora",v:10}],tag:"Consciência de mudança"}
+];
+
+let resps=new Array(10).fill(null),qAtual=0,dadosU={},diaSel=null,horaSel=null;
+
+function getP(){try{return JSON.parse(localStorage.getItem(SK)||'[]');}catch(e){return[];}}
+function saveP(p){const l=getP();l.push(p);localStorage.setItem(SK,JSON.stringify(l));}
+function updP(p){const l=getP();for(let i=l.length-1;i>=0;i--){if(l[i].tel===p.tel&&l[i].timestamp===p.timestamp){l[i]={...p};break;}}localStorage.setItem(SK,JSON.stringify(l));}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+function startQuiz(){
+  const nome=document.getElementById('i-nome').value.trim();
+  const tel=document.getElementById('i-tel').value.trim();
+  if(!nome||!tel){alert('Preencha seu nome e WhatsApp para continuar.');return;}
+  dadosU={nome,tel,email:document.getElementById('i-email').value.trim(),idade:document.getElementById('i-idade').value.trim()};
+  resps=new Array(10).fill(null);qAtual=0;show('s-quiz');renderQ();
+}
+function renderQ(){
+  const q=Qs[qAtual];
+  document.getElementById('q-num').textContent=String(qAtual+1).padStart(2,'0')+' / 10';
+  document.getElementById('p-label').textContent='Pergunta '+(qAtual+1)+' de 10';
+  const pct=Math.round(qAtual/10*100);
+  document.getElementById('p-pct').textContent=pct+'%';
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('q-ico').textContent=q.ico;
+  document.getElementById('q-txt').textContent=q.txt;
+  const od=document.getElementById('q-opts');od.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='opt'+(resps[qAtual]===i?' sel':'');
+    b.innerHTML='<span class="opt-n">'+(i+1)+'</span><span>'+o.l+'</span>';
+    b.onclick=()=>selOp(i);od.appendChild(b);
+  });updBtn();
+}
+function selOp(i){
+  resps[qAtual]=i;
+  document.querySelectorAll('.opt').forEach((b,idx)=>{
+    b.classList.toggle('sel',idx===i);
+    const n=b.querySelector('.opt-n');
+    n.style.background=idx===i?'var(--gold)':'';n.style.borderColor=idx===i?'var(--gold)':'';n.style.color=idx===i?'var(--black)':'';
+  });updBtn();
+}
+function updBtn(){
+  const b=document.getElementById('btn-nxt'),on=resps[qAtual]!==null;
+  b.classList.toggle('on',on);b.textContent=qAtual===9?'Ver meu resultado →':'Próxima →';
+}
+function nextQ(){if(resps[qAtual]===null)return;if(qAtual<9){qAtual++;renderQ();}else showResultado();}
+function prevQ(){if(qAtual>0){qAtual--;renderQ();}}
+function calcScore(){let t=0;Qs.forEach((q,i)=>{if(resps[i]!==null)t+=q.opts[resps[i]].v;});return parseFloat((t/100*10).toFixed(1));}
+
+function showResultado(){
+  const sc=calcScore();
+  const svg=document.getElementById('score-svg');
+  const r=57,cx=65,cy=65,circ=2*Math.PI*r,dashoff=circ*(1-sc/10);
+  const cor=sc>=9?'#6ec98a':sc>=6?'#c8922a':'#e88';
+  svg.innerHTML=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="6"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${cor}" stroke-width="6"
+      stroke-dasharray="${circ}" stroke-dashoffset="${dashoff}" stroke-linecap="round"
+      transform="rotate(-90 ${cx} ${cy})" style="transition:stroke-dashoffset 1.2s ease"/>`;
+  const el=document.getElementById('score-val');el.style.color=cor;
+  let d=0;const iv=setInterval(()=>{d=Math.min(d+.15,sc);el.textContent=d.toFixed(1);if(d>=sc)clearInterval(iv);},30);
+  document.getElementById('cta-urg').style.display='none';
+  document.getElementById('cta-ok').style.display='none';
+  let titulo,msg;
+  if(sc>=9){titulo='Você se cuida muito bem';msg='Parabéns, '+dadosU.nome+'! Você demonstra uma relação saudável consigo mesma. Continue investindo em você.';document.getElementById('cta-ok').style.display='block';}
+  else if(sc>=6){titulo='Você merece mais atenção';msg=dadosU.nome+', você tem consciência de si, mas ainda coloca os outros na frente com frequência. Chegou a hora de equilibrar essa balança.';document.getElementById('cta-urg').style.display='block';}
+  else{titulo='Você está no último lugar da sua própria lista';msg=dadosU.nome+', você cuida de todos, mas se esqueceu de si mesma. Seu bem-estar pede atenção urgente — e você merece um recomeço que começa agora.';document.getElementById('cta-urg').style.display='block';}
+  document.getElementById('res-title').textContent=titulo;
+  document.getElementById('res-msg').textContent=msg;
+  const tagsDiv=document.getElementById('tags');tagsDiv.innerHTML='';
+  const tgs=[...new Set(resps.map((r,i)=>r!==null&&r>=2?Qs[i].tag:null).filter(Boolean))].slice(0,6);
+  if(!tgs.length)tgs.push('Equilíbrio','Bem-estar');
+  tgs.forEach(t=>{const s=document.createElement('span');s.className='tag';s.textContent=t;tagsDiv.appendChild(s);});
+  dadosU.score=sc;dadosU.agendou='Não';dadosU.dataAgenda='—';dadosU.horaAgenda='—';dadosU.preocupacao='—';
+  dadosU.timestamp=new Date().toLocaleString('pt-BR');
+  dadosU.tags=[...new Set(resps.map((r,i)=>r!==null&&r>=2?Qs[i].tag:null).filter(Boolean))].join(', ');
+  saveP({...dadosU});show('s-res');
+}
+
+function renderDias(){
+  const grid=document.getElementById('dias-grid');grid.innerHTML='';
+  DATAS.forEach((d,i)=>{
+    const card=document.createElement('div');
+    card.className='dia-card'+(diaSel&&diaSel.idx===i?' sel':'');
+    card.innerHTML=`<div class="dc-dia">${d.dia}</div><div class="dc-mes">${d.mesStr}</div><div class="dc-sem">${d.semana}</div>`;
+    card.onclick=()=>selDia(i);grid.appendChild(card);
+  });
+}
+function selDia(idx){
+  diaSel={idx,...DATAS[idx]};horaSel=null;renderDias();
+  document.getElementById('horas-section').style.display='block';
+  document.getElementById('cal-confirm-wrap').style.display='none';
+  renderHoras();
+  setTimeout(()=>document.getElementById('horas-section').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+function renderHoras(){
+  const hg=document.getElementById('horas-grid');hg.innerHTML='';
+  HORAS.forEach(h=>{
+    const b=document.createElement('button');b.className='hora-btn'+(horaSel===h?' sel':'');
+    b.textContent=h;b.onclick=()=>selHora(h);hg.appendChild(b);
+  });
+}
+function selHora(h){
+  horaSel=h;renderHoras();
+  const d=diaSel;
+  const dataStr=String(d.dia).padStart(2,'0')+'/'+String(d.mes+1).padStart(2,'0')+'/'+d.ano+' — '+d.semana;
+  document.getElementById('cf-nome').textContent=dadosU.nome;
+  document.getElementById('cf-data').textContent=dataStr;
+  document.getElementById('cf-hora').textContent=h;
+  document.getElementById('cf-tel').textContent=dadosU.tel;
+  document.getElementById('cal-confirm-wrap').style.display='block';
+  setTimeout(()=>document.getElementById('cal-confirm-wrap').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+function confirmarAgenda(){
+  if(!diaSel||!horaSel){alert('Selecione uma data e horário.');return;}
+  const d=diaSel;
+  const dataStr=String(d.dia).padStart(2,'0')+'/'+String(d.mes+1).padStart(2,'0')+'/'+d.ano;
+  dadosU.agendou='Sim';dadosU.dataAgenda=dataStr+' ('+d.semana+')';dadosU.horaAgenda=horaSel;
+  dadosU.preocupacao=document.getElementById('i-preoc').value||'—';
+  updP({...dadosU});
+  document.getElementById('fin-nome').textContent=dadosU.nome;
+  document.getElementById('fin-data').textContent=dataStr+' — '+d.semana;
+  document.getElementById('fin-hora').textContent=horaSel;
+  show('s-final');
+}
+function novoReg(){
+  resps=new Array(10).fill(null);qAtual=0;dadosU={};diaSel=null;horaSel=null;
+  ['i-nome','i-tel','i-email','i-idade'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cta-urg').style.display='none';document.getElementById('cta-ok').style.display='none';
+  show('s0');
+}
+
+// Inicializa calendário ao entrar na tela
+const calScreen=document.getElementById('s-cal');
+const observer=new MutationObserver(()=>{
+  if(calScreen.classList.contains('active')){
+    diaSel=null;horaSel=null;
+    document.getElementById('horas-section').style.display='none';
+    document.getElementById('cal-confirm-wrap').style.display='none';
+    renderDias();
+  }
+});
+observer.observe(calScreen,{attributeFilter:['class']});
+
+function checkSenha(){
+  const v=document.getElementById('i-senha').value;
+  document.getElementById('senha-err').style.display=v===SENHA?'none':'block';
+  if(v===SENHA)renderPanel();
+}
+function renderPanel(){
+  const list=getP();
+  const total=list.length,ag=list.filter(p=>p.agendou==='Sim').length;
+  const media=total?parseFloat((list.reduce((s,p)=>s+(parseFloat(p.score)||0),0)/total).toFixed(1)):0;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="stat-n">${total}</div><div class="stat-l">Participantes</div></div>
+    <div class="stat"><div class="stat-n">${ag}</div><div class="stat-l">Agendamentos</div></div>
+    <div class="stat"><div class="stat-n">${media}</div><div class="stat-l">Nota média</div></div>`;
+  const tbody=document.getElementById('dados-tbody');tbody.innerHTML='';
+  if(!list.length){tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:rgba(255,255,255,.2);padding:2rem;">Nenhuma participante registrada ainda.</td></tr>';show('s-panel');return;}
+  [...list].reverse().forEach(p=>{
+    const sc=parseFloat(p.score)||0;
+    const badge=sc>=9?'badge-green':sc>=6?'badge-gold':'badge-red';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong style="color:var(--white);font-weight:400;">${p.nome||'—'}</strong></td>
+      <td>${p.tel||'—'}</td><td>${p.idade||'—'}</td>
+      <td style="font-size:10px;">${p.email||'—'}</td>
+      <td><span class="badge ${badge}">${sc}</span></td>
+      <td>${p.agendou||'—'}</td><td>${p.dataAgenda||'—'}</td><td>${p.horaAgenda||'—'}</td>
+      <td style="font-size:10px;">${p.preocupacao||'—'}</td>
+      <td style="font-size:10px;">${p.timestamp||'—'}</td>`;
+    tbody.appendChild(tr);
+  });
+  show('s-panel');
+}
+function exportCSV(){
+  const list=getP();if(!list.length){alert('Nenhum dado para exportar.');return;}
+  const cols=['nome','tel','idade','email','score','agendou','dataAgenda','horaAgenda','preocupacao','tags','timestamp'];
+  const csv='\uFEFF'+[cols.join(';'),...list.map(p=>cols.map(c=>(p[c]||'').toString().replace(/;/g,',')).join(';'))].join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='AMInstituto_Evento25Abril.csv';a.click();
+}
+</script>
+</body>
+</html>
