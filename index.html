@@ -396,15 +396,19 @@ function toast(msg){
 // GOOGLE SHEETS — envio não-bloqueante
 // ═══════════════════════════════════════════
 function enviarSheets(dados){
-  // Usa GET com parâmetros para evitar bloqueio de CORS do Apps Script
-  const params = new URLSearchParams();
-  Object.keys(dados).forEach(k => params.append(k, dados[k] !== undefined && dados[k] !== null ? String(dados[k]) : ''));
-  const url = SHEETS_URL + '?' + params.toString();
-  // Técnica com Image evita bloqueio de CORS completamente
-  const img = new Image();
-  img.src = url;
-  // Fallback com fetch no-cors
-  fetch(url, {method:'GET', mode:'no-cors'}).catch(()=>{});
+  try {
+    const params = new URLSearchParams();
+    Object.keys(dados).forEach(k => {
+      const v = dados[k];
+      params.append(k, v !== undefined && v !== null ? String(v) : '');
+    });
+    const url = SHEETS_URL + '?' + params.toString();
+    const script = document.createElement('script');
+    script.src = url;
+    script.onload = function(){ this.remove(); };
+    script.onerror = function(){ this.remove(); };
+    document.head.appendChild(script);
+  } catch(e){}
 }
 
 // ═══════════════════════════════════════════
